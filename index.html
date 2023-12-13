@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/style.css">
+</head>
+<body>
+<header class="header">
+<div class="header-inner">
+    <div class="header-inner-item" onclick="restartQuiz()">Reset</div>
+</div>
+</header>
+<section class="welcome-section" id="welcome-container">
+    <div class="container welcome-section-inner">
+        <h1 class="titles">Welcome to the Quiz!</h1>
+        <div class="start-btn-wrap">
+            <button id="start-btn" class="start-btn"></button>
+        </div>
+    </div>
+</section>
+<section class="quiz-section">
+    <div class="container">
+        <div id="question-container"></div>
+        <div id="options-container"></div>
+        <button id="next-btn">Next</button>
+    </div>
+</section>
+<section class="result-section" id="result-container">
+    <div class="container result-section-inner">
+        <button id="restart-btn" onclick="restartQuiz()">Restart</button>
+    </div>
+</section>
+
+
+<script src="script.js"></script>
+</body>
+</html>
