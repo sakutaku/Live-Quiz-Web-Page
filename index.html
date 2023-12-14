@@ -11,27 +11,35 @@
 <body>
 <header class="header">
 <div class="header-inner">
-    <div class="header-inner-item" onclick="restartQuiz()">Reset</div>
+    <div class="header-inner-item" id="restart-btn">Reset</div>
 </div>
 </header>
 <section class="welcome-section" id="welcome-container">
     <div class="container welcome-section-inner">
         <h1 class="titles">Welcome to the Quiz!</h1>
         <div class="start-btn-wrap">
-            <button id="start-btn" class="start-btn"></button>
+            <button id="start-btn" class="start-btn">
+                <span class="start-btn-txt">Start</span>
+            </button>
         </div>
     </div>
 </section>
-<section class="quiz-section">
+<section class="quiz-section" id="quiz-section">
     <div class="container">
-        <div id="question-container"></div>
-        <div id="options-container"></div>
-        <button id="next-btn">Next</button>
+        <div class="quiz-section-inner">
+            <div id="question-container" class="question-container"></div>
+            <div id="options-container" class="options-container"></div>
+            <div class="quiz-section-btns">
+                <button id="next-btn" class="next-btn">Next page</button>
+                <button id="prev-btn" class="prev-btn">Prev page</button>
+                <button id="check-btn" class="check-btn">Check answer</button>
+            </div>
+        </div>
     </div>
 </section>
 <section class="result-section" id="result-container">
-    <div class="container result-section-inner">
-        <button id="restart-btn" onclick="restartQuiz()">Restart</button>
+    <div class="container">
+        <div id="result-section-inner"></div>
     </div>
 </section>
 

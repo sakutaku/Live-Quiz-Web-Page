@@ -1,9 +1,15 @@
 const welcomeContainer = document.getElementById('welcome-container');
-const quizContainer = document.getElementById('quiz-container');
-const quizSection = document.querySelector('.quiz-section');
 const startBtn = document.getElementById('start-btn');
-const restartBtn = document.getElementById('restart-btn');
-const resultSectionInner = document.querySelector('.result-section-inner');
+const restartBtn = document.querySelector('#restart-btn');
+const resultSectionInner = document.querySelector('#result-section-inner');
+const prevBtn = document.querySelector('#prev-btn');
+const quizSection = document.querySelector('#quiz-section');
+const questionContainer = document.getElementById('question-container');
+const optionsContainer = document.getElementById('options-container');
+const resultContainer = document.getElementById('result-container');
+const nextBtn = document.getElementById('next-btn');
+const checkBtn = document.querySelector('#check-btn');
+
 const quizData = [
     {
         question: 'What is the capital of New Zealand?',
@@ -26,42 +32,75 @@ const quizData = [
 let currentQuestion = 0;
 let score = 0;
 
+const questionWrap = document.createElement('p');
+const questionNum = document.createElement('span');
+const questionTxt = document.createElement('span');
+
+questionWrap.classList.add('question-wrap');
+questionNum.classList.add('question-num');
+questionTxt.classList.add('question-txt');
+
+questionWrap.appendChild(questionNum);
+questionWrap.appendChild(questionTxt);
+questionContainer.appendChild(questionWrap);
 const loadQuestion = () => {
     const currentQuizData = quizData[currentQuestion];
-    const quiestionWrap = document.createElement('p');
-    const quiestionNum = document.createElement('span');
-    const quiestionTxt = document.createElement('span');
 
-    quiestionWrap.classList.add('question-wrap');
-    quiestionNum.classList.add('question-num');
-    quiestionTxt.classList.add('question-txt');
-
-    quiestionNum.innerText = String(currentQuestion + 1);
-    quiestionTxt.innerText = currentQuizData.question;
-    quiestionWrap.appendChild(quiestionNum);
-    quiestionWrap.appendChild(quiestionTxt);
-    questionContainer.appendChild(quiestionWrap);
+    questionNum.innerText = String(currentQuestion + 1);
+    questionTxt.innerText = quizData[currentQuestion].question;
     optionsContainer.innerHTML = '';
 
     if (currentQuizData.type === 'text') {
-        console.log('hello');
         const inputElement = document.createElement('input');
+        inputElement.classList.add('input');
         inputElement.type = 'text';
         inputElement.id = 'text-input';
         optionsContainer.appendChild(inputElement);
     } else if (currentQuizData.type === 'checkbox') {
         currentQuizData.options.forEach(option => {
-            console.log(option);
+            const labelElement = document.createElement('label');
+
+            labelElement.htmlFor = option.toLowerCase();
+            labelElement.innerText = option;
+            labelElement.classList.add('custom-checkbox');
+
             const checkboxElement = document.createElement('input');
             checkboxElement.type = 'checkbox';
             checkboxElement.value = option;
             checkboxElement.id = option.toLowerCase();
-            const labelElement = document.createElement('label');
-            labelElement.htmlFor = option.toLowerCase();
-            labelElement.innerText = option;
-            optionsContainer.appendChild(checkboxElement);
+            checkboxElement.classList.add('checkbox');
+
+            const span = document.createElement('span');
+            span.classList.add('checkmark');
+
+            labelElement.appendChild(checkboxElement);
+            labelElement.appendChild(span);
             optionsContainer.appendChild(labelElement);
         });
+    }
+
+    currentQuestion === 0 ? prevBtn.style.display = 'none' : prevBtn.style.display = 'block';
+    currentQuestion === quizData.length - 1 ? nextBtn.style.display = 'none' : nextBtn.style.display = 'block';
+    currentQuestion === quizData.length - 1 ? checkBtn.style.display = 'block' : checkBtn.style.display = 'none';
+};
+const arraysEqual = (arr1, arr2) => {
+    return JSON.stringify(arr1) === JSON.stringify(arr2);
+};
+
+const checkAnswer = () => {
+    const currentQuizData = quizData[currentQuestion];
+
+    if (currentQuizData.type === 'text') {
+        const userInput = (document.getElementById('text-input')).value.trim().toLowerCase();
+        if (userInput === currentQuizData.correct.toLowerCase()) {
+            score++;
+        }
+    } else if (currentQuizData.type === 'checkbox') {
+        const userSelections = Array.from(optionsContainer.querySelectorAll('input[type="checkbox"]:checked')).map(checkbox => checkbox.value);
+
+        if (arraysEqual(userSelections, currentQuizData.correct)) {
+            score++;
+        }
     }
 };
 
@@ -74,12 +113,6 @@ const startQuiz = () => {
 
 startBtn.addEventListener('click', startQuiz);
 
-
-const questionContainer = document.getElementById('question-container');
-const optionsContainer = document.getElementById('options-container');
-const resultContainer = document.getElementById('result-container');
-const nextBtn = document.getElementById('next-btn');
-
 const nextQuestion = () => {
     checkAnswer();
     currentQuestion++;
@@ -87,49 +120,39 @@ const nextQuestion = () => {
     if (currentQuestion < quizData.length) {
         loadQuestion();
     } else if (currentQuestion === quizData.length) {
-        console.log(currentQuestion);
-        console.log(quizData.length);
         showResult();
     }
 };
 nextBtn.addEventListener("click", nextQuestion);
 
-function checkAnswer() {
-    const currentQuizData = quizData[currentQuestion];
-    console.log(currentQuizData);
-
-    if (currentQuizData.type === 'text') {
-        const userInput = (document.getElementById('text-input')).value.trim().toLowerCase();
-        console.log(userInput);
-        if (userInput === currentQuizData.correct.toLowerCase()) {
-            score++;
-        }
-    } else if (currentQuizData.type === 'checkbox') {
-        const userSelections = Array.from(optionsContainer.querySelectorAll('input[type="checkbox"]:checked')).map(checkbox => checkbox.value);
-        console.log(userSelections);
-        if (arraysEqual(userSelections, currentQuizData.correct)) {
-            score++;
-        }
-    }
-}
-
-function showResult() {
-    quizContainer.style.display = 'none';
+const showResult = () => {
+    checkAnswer();
+    quizSection.style.display = 'none';
     resultContainer.style.display = 'block';
-    resultSectionInner.innerHTML = `<h2>Your Score: ${score}/${quizData.length}</h2>`;
-    restartBtn.style.display = 'block';
-}
+    resultSectionInner.innerHTML =
+        `<h2 class="titles">Your Score: ${score}/${quizData.length}! ${score === 2 || score === 3 ? 'Perfect!' : 'Try again!'}</h2>`;
+};
 
-function restartQuiz() {
+checkBtn.addEventListener('click', showResult);
+const restartQuiz = ()=>  {
     currentQuestion = 0;
     score = 0;
-    welcomeContainer.style.display = 'none';
+    welcomeContainer.style.display = 'block';
     resultContainer.style.display = 'none';
-    quizContainer.style.display = 'block';
+    quizSection.style.display = 'none';
     loadQuestion();
-    restartBtn.style.display = 'none';
-}
+};
 
-function arraysEqual(arr1, arr2) {
-    return JSON.stringify(arr1) === JSON.stringify(arr2);
-}
+restartBtn.addEventListener('click', restartQuiz);
+
+const prevPage = () => {
+    currentQuestion--;
+
+    if (currentQuestion < quizData.length) {
+        loadQuestion();
+    } else if (currentQuestion === quizData.length) {
+        showResult();
+    }
+};
+
+prevBtn.addEventListener('click', prevPage);
