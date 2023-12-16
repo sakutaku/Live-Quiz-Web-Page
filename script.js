@@ -23,8 +23,7 @@ const fetchPizzas = async () => {
 };
 
 const fetchData = async () => {
-    const data = await fetchPizzas();
-    quizData = data;
+    quizData = await fetchPizzas();
 };
 
 fetchData();
@@ -61,7 +60,6 @@ const loadQuestion = () => {
         const array = currentQuizData.options.replace(/'/g, '"');
         const resultArray = JSON.parse(array);
 
-        console.log(currentQuizData.options);
         resultArray.forEach(option => {
             const labelElement = document.createElement('label');
 
@@ -69,19 +67,49 @@ const loadQuestion = () => {
             labelElement.innerText = option;
             labelElement.classList.add('custom-checkbox');
 
-            const checkboxElement = document.createElement('input');
-            checkboxElement.type = 'checkbox';
-            checkboxElement.value = option;
-            checkboxElement.id = option.toLowerCase();
-            checkboxElement.classList.add('checkbox');
+            const inputElement = document.createElement('input');
+            inputElement.type = currentQuizData.type;
+            inputElement.value = option;
+            inputElement.id = option.toLowerCase();
+            inputElement.classList.add('checkbox');
 
             const span = document.createElement('span');
             span.classList.add('checkmark');
 
-            labelElement.appendChild(checkboxElement);
+            labelElement.appendChild(inputElement);
             labelElement.appendChild(span);
             optionsContainer.appendChild(labelElement);
         });
+    } else if (currentQuizData.type === 'radio') {
+        const array = currentQuizData.options.replace(/'/g, '"');
+        const resultArray = JSON.parse(array);
+
+        resultArray.forEach(option => {
+            const wrap = document.createElement('div');
+            wrap.classList.add('radio-wrap');
+            const labelElement = document.createElement('label');
+
+            labelElement.htmlFor = option.toLowerCase();
+            labelElement.innerText = option;
+            labelElement.classList.add('custom-radio');
+
+            const inputElement = document.createElement('input');
+            inputElement.type = currentQuizData.type;
+            inputElement.value = option;
+            inputElement.id = option.toLowerCase();
+            inputElement.name = 'radio-group';
+            inputElement.classList.add('radio-box');
+
+            wrap.appendChild(inputElement);
+            wrap.appendChild(labelElement);
+            optionsContainer.appendChild(wrap);
+        });
+    } else if (currentQuizData.type === 'number') {
+        const inputElement = document.createElement('input');
+        inputElement.classList.add('input');
+        inputElement.type = 'number';
+        inputElement.id = 'number-input';
+        optionsContainer.appendChild(inputElement);
     }
 
     currentQuestion === 0 ? prevBtn.style.display = 'none' : prevBtn.style.display = 'block';
@@ -106,6 +134,22 @@ const checkAnswer = () => {
         const resultArray = JSON.parse(array);
 
         if (arraysEqual(userSelections, resultArray)) {
+            score++;
+        }
+    } else if (currentQuizData.type === 'radio') {
+        const selectedRadio = optionsContainer.querySelector('input[type="radio"]:checked');
+
+        if (selectedRadio) {
+            const userSelection = selectedRadio.value;
+
+            if (userSelection === String(currentQuizData.correct)) {
+                console.log()
+                score++;
+            }
+        }
+    } else if (currentQuizData.type === 'number') {
+        const userInput = (document.getElementById('number-input')).value.trim().toLowerCase();
+        if (userInput === String(currentQuizData.correct)) {
             score++;
         }
     }
@@ -137,7 +181,7 @@ const showResult = () => {
     quizSection.style.display = 'none';
     resultContainer.style.display = 'block';
     resultSectionInner.innerHTML =
-        `<h2 class="titles">Your Score: ${score}/${quizData.length}! ${score === 2 || score === 3 ? 'Perfect!' : 'Try again!'}</h2>`;
+        `<h2 class="titles">Your Score: ${score}/${quizData.length}! ${score === quizData.length ? 'Perfect!' : 'Try again!'}</h2>`;
 };
 
 checkBtn.addEventListener('click', showResult);
