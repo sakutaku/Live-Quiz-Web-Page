@@ -6,7 +6,7 @@ To start the project, you need to do the following:
 
 1) Clone the project to your Github machine with the command:
    
-   `git clone git@github.com:sakutaku/quiz.git`
+   `git clone git@github.com:sakutaku/Live-Quiz-Web-Page.git`
 
 2) Install dependencies:
 
