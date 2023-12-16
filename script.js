@@ -1,3 +1,5 @@
+import axios from 'https://cdn.jsdelivr.net/npm/axios@1.3.5/+esm';
+
 const welcomeContainer = document.getElementById('welcome-container');
 const startBtn = document.getElementById('start-btn');
 const restartBtn = document.querySelector('#restart-btn');
@@ -10,24 +12,23 @@ const resultContainer = document.getElementById('result-container');
 const nextBtn = document.getElementById('next-btn');
 const checkBtn = document.querySelector('#check-btn');
 
-const quizData = [
-    {
-        question: 'What is the capital of New Zealand?',
-        type: 'text',
-        correct: 'Wellington'
-    },
-    {
-        question: 'Which planets are known as the gas giants?',
-        type: 'checkbox',
-        options: ['Jupiter', 'Saturn', 'Uranus', 'Neptune'],
-        correct: ['Jupiter', 'Saturn', 'Uranus', 'Neptune']
-    },
-    {
-        question: 'What is the largest mammal?',
-        type: 'text',
-        correct: 'Blue Whale'
+let quizData = [];
+const fetchPizzas = async () => {
+    try {
+        const response = await axios.get('https://js-course-18-87cf5-default-rtdb.europe-west1.firebasedatabase.app/quiz.json');
+        return response.data;
+    } catch (e) {
+        console.log(e);
     }
-];
+};
+
+const fetchData = async () => {
+    const data = await fetchPizzas();
+    quizData = data;
+};
+
+fetchData();
+
 
 let currentQuestion = 0;
 let score = 0;
@@ -57,7 +58,11 @@ const loadQuestion = () => {
         inputElement.id = 'text-input';
         optionsContainer.appendChild(inputElement);
     } else if (currentQuizData.type === 'checkbox') {
-        currentQuizData.options.forEach(option => {
+        const array = currentQuizData.options.replace(/'/g, '"');
+        const resultArray = JSON.parse(array);
+
+        console.log(currentQuizData.options);
+        resultArray.forEach(option => {
             const labelElement = document.createElement('label');
 
             labelElement.htmlFor = option.toLowerCase();
@@ -97,8 +102,10 @@ const checkAnswer = () => {
         }
     } else if (currentQuizData.type === 'checkbox') {
         const userSelections = Array.from(optionsContainer.querySelectorAll('input[type="checkbox"]:checked')).map(checkbox => checkbox.value);
+        const array = currentQuizData.correct.replace(/'/g, '"');
+        const resultArray = JSON.parse(array);
 
-        if (arraysEqual(userSelections, currentQuizData.correct)) {
+        if (arraysEqual(userSelections, resultArray)) {
             score++;
         }
     }
